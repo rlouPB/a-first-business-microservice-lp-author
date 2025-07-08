@@ -3,6 +3,10 @@ use std::convert::Infallible;
 use std::str;
 use hyper::service::{make_service_fn, service_fn};
 use hyper::{Body, Method, Request, Response, StatusCode, Server};
+use hyper::Client;
+use tokio::io::{stdout, AsyncWriteExt as _};
+use hyper::body::HttpBody as _;
+use hyper::Uri;
 use csv::Reader;
 
 /// This is our service handler. It receives a Request, routes on its
@@ -15,7 +19,20 @@ async fn handle_request(req: Request<Body>) -> Result<Response<Body>, anyhow::Er
         ))),
 
         (&Method::POST, "/find_rate") => {
+            let client = Client::new();
+            
             let post_body = hyper::body::to_bytes(req.into_body()).await?;
+            let zip_code = str::from_utf8(&post_body).unwrap();
+            let end_point = format!("http://api.zippopotam.us/us/{}", zip_code);
+            let url:Uri = end_point.parse()?;
+            let mut response = client.get(url).await?;
+            let body = hyper::body::to_bytes(response.body_mut()).await?;
+            println!("{:?}", body);
+            if body == "{}" {
+                let mut not_found = Response::new(Body::from("Zip code not found"));
+                *not_found.status_mut() = StatusCode::NOT_FOUND;
+                return Ok(not_found);
+            }
             let mut rate = "0.08".to_string(); // default is 8%
 
             let rates_data: &[u8] = include_bytes!("rates_by_zipcode.csv");
