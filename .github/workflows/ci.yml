@@ -59,5 +59,21 @@ jobs:
           echo -e "Execution Fail!"
           exit 1
         fi
+        resp=$(curl http://localhost:8001/find_rate -X POST -d "60062")
+        echo "$resp"
+        if [[ $resp == "0.1" ]]; then
+          echo -e "Execution Success!"
+        else
+          echo -e "Execution Fail!"
+          exit 1
+        fi
+        resp=$(curl http://localhost:8001/find_rate -X POST -d "11111")
+        echo "$resp"
+        if [[ $resp == "Zip code not found" ]]; then
+          echo -e "Execution Success!"
+        else
+          echo -e "Execution Fail!"
+          exit 1
+        fi
         kill -9 `cat wasmedge.pid`
         rm wasmedge.pid
