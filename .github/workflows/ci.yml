@@ -35,9 +35,6 @@ jobs:
       run: |
         VERSION=0.13.5
         curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | sudo bash -s -- -e all --version=$VERSION -p /usr/local
-    
-    - name: Verify WasmEdge installation
-        run: wasmedge --version
         
     - name: microservice
       run: |
