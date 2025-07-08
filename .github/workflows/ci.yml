@@ -15,7 +15,7 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
@@ -33,9 +33,12 @@ jobs:
         
     - name: Install WasmEdge
       run: |
-        VERSION=0.11.2
+        VERSION=0.13.5
         curl -sSf https://raw.githubusercontent.com/WasmEdge/WasmEdge/master/utils/install.sh | sudo bash -s -- -e all --version=$VERSION -p /usr/local
     
+    - name: Verify WasmEdge installation
+        run: wasmedge --version
+        
     - name: microservice
       run: |
         cargo build --target wasm32-wasip1 --release
