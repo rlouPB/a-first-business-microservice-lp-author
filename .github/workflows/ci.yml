@@ -29,7 +29,7 @@ jobs:
     
     - name: Install Rust target for wasm
       run: |
-        rustup target add wasm32-wasi
+        rustup target add wasm32-wasip1
         
     - name: Install WasmEdge
       run: |
@@ -38,8 +38,8 @@ jobs:
     
     - name: microservice
       run: |
-        cargo build --target wasm32-wasi --release
-        wasmedgec target/wasm32-wasi/release/sales_tax_rate_lookup.wasm sales_tax_rate_lookup.wasm
+        cargo build --target wasm32-wasip1 --release
+        wasmedgec target/wasm32-wasip1/release/sales_tax_rate_lookup.wasm sales_tax_rate_lookup.wasm
         nohup wasmedge sales_tax_rate_lookup.wasm &
         echo $! > wasmedge.pid
         sleep 15
